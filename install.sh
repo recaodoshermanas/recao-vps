@@ -41,9 +41,16 @@ ufw --force enable
 
 say "5/8 Docker"
 if ! command -v docker >/dev/null; then
-  curl -fsSL https://get.docker.com | sh
+  # El script oficial puede no conocer aún versiones muy nuevas de Ubuntu;
+  # si falla, usamos el Docker de los repositorios de Ubuntu.
+  if ! (curl -fsSL https://get.docker.com | sh); then
+    echo "El instalador oficial de Docker falló; usando el paquete de Ubuntu"
+    rm -f /etc/apt/sources.list.d/docker.list /etc/apt/sources.list.d/docker.sources
+    apt-get update -q
+    apt-get install -y -q docker.io docker-compose-v2 || apt-get install -y -q docker.io docker-compose || true
+  fi
 fi
-systemctl enable --now docker
+systemctl enable --now docker || echo "AVISO: Docker no arrancó; lo revisaremos después"
 
 say "6/8 Caddy (HTTPS automático)"
 if ! command -v caddy >/dev/null; then
