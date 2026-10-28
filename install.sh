@@ -91,6 +91,7 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=/etc/recao-mcp.env
+Environment=HOME=/root
 ExecStart=/usr/bin/node /opt/recao-mcp/server.mjs
 WorkingDirectory=/root
 Restart=always
